@@ -1,0 +1,17 @@
+{
+    "name": "quickpos/landing",
+    "description": "POS Landing Page",
+    "type": "project",
+    "require-dev": {
+        "phpunit/phpunit": "*",
+        "phpstan/phpstan": "*",
+        "squizlabs/php_codesniffer": "*"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "laibanaz858",
+            "email": "laibanaaz858@gmail.com"
+        }
+    ]
+}
