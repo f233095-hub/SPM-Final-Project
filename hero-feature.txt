@@ -1,0 +1,1 @@
+Hero section with headline, subheadline and CTA button
