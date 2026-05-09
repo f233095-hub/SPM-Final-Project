@@ -1,0 +1,1 @@
+Header section with logo, navigation and signup button
