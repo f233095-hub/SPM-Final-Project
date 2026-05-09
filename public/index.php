@@ -55,63 +55,6 @@
             background: #ff6b6b;
             color: white;
         }
-
-        /* Hero Section Styles - SFP-11, SFP-12 */
-.hero {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    text-align: center;
-    padding: 100px 5%;
-    min-height: 500px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.hero-content h1 {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-    animation: fadeInUp 0.8s ease;
-}
-
-.hero-content p {
-    font-size: 1.2rem;
-    margin-bottom: 2rem;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-    opacity: 0.9;
-}
-
-.cta-btn {
-    background: #e94560;
-    color: white;
-    padding: 1rem 2rem;
-    border-radius: 50px;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 1.1rem;
-    transition: transform 0.3s, box-shadow 0.3s;
-    display: inline-block;
-}
-
-.cta-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-    background: #ff6b6b;
-}
-
-/* Animations */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
     </style>
 </head>
 <body>
@@ -126,14 +69,7 @@
         </nav>
     </header>
 
-    <!-- Hero Section - Epic 2 (SFP-11, SFP-12) -->
-<section class="hero">
-    <div class="hero-content">
-        <h1>Modern POS System for Your Business</h1>
-        <p>Process payments, manage inventory, and track sales - all in one place. Fast, secure, and easy to use.</p>
-        <a href="#contact" class="cta-btn">Get Started Free →</a>
-    </div>
-</section>
+    <!-- Hero Section - Epic 2 (will add later) -->
     <!-- Features Section - Epic 3 (will add later) -->
     <!-- Pricing Section - Epic 4 (will add later) -->
     <!-- Contact Form - Epic 5 (will add later) -->
