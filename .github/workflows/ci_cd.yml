@@ -1,0 +1,55 @@
+name: QuickPOS CI Pipeline
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - 'feature/*'
+      - 'bugfix/*'
+
+jobs:
+  jira-validation:
+    name: Validate Jira Commit Message
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Check for Jira ID
+        run: |
+          COMMIT_MSG=$(git log --format=%B -n 1 ${{ github.sha }})
+          # Updated to match your SFP ticket format
+          if [[ ! "$COMMIT_MSG" =~ \[SFP-[0-9]+\] ]]; then
+            echo "Pipeline Failed: Commit message does NOT contain a valid Jira ticket ID (e.g., [SFP-15])."
+            exit 1
+          fi
+          echo "Commit message validated successfully."
+
+  syntax-check:
+    name: PHP Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+      - name: Run Syntax Check
+        run: find . -name "*.php" -exec php -l {} \;
+
+  automated-testing:
+    name: Automated Tests (PHPUnit)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: phpunit
+      - name: Run PHPUnit Tests
+        # Runs the tests inside the /tests directory
+        run: phpunit tests/
