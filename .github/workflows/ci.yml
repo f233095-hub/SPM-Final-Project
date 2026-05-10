@@ -17,14 +17,24 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
       - name: Check for Jira ID
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
         run: |
-          COMMIT_MSG=$(git log --format=%B -n 1 ${{ github.sha }})
-          # Updated to match your SFP ticket format
-          if [[ ! "$COMMIT_MSG" =~ \[SFP-[0-9]+\] ]]; then
-            echo "Pipeline Failed: Commit message does NOT contain a valid Jira ticket ID (e.g., [SFP-15])."
-            exit 1
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            # On Pull Requests, check the PR Title
+            if [[ ! "$PR_TITLE" =~ \[SFP-[0-9]+\] ]]; then
+              echo "Pipeline Failed: PR title does NOT contain a valid Jira ticket ID (e.g., [SFP-15])."
+              exit 1
+            fi
+          else
+            # On Pushes, check the Commit Message
+            COMMIT_MSG=$(git log --format=%B -n 1 ${{ github.sha }})
+            if [[ ! "$COMMIT_MSG" =~ \[SFP-[0-9]+\] ]]; then
+              echo "Pipeline Failed: Commit message does NOT contain a valid Jira ticket ID (e.g., [SFP-15])."
+              exit 1
+            fi
           fi
-          echo "Commit message validated successfully."
+          echo "Validation passed successfully."
 
   syntax-check:
     name: PHP Syntax Check
@@ -51,5 +61,4 @@ jobs:
           php-version: '8.2'
           tools: phpunit
       - name: Run PHPUnit Tests
-        # Runs the tests inside the /tests directory
         run: phpunit tests/
