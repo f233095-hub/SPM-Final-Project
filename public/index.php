@@ -1,78 +1,75 @@
+<?php
+require_once '../src/FormValidator.php';
+$formStatus = "";
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $name = $_POST['name'] ?? '';
+    $email = $_POST['email'] ?? '';
+    $message = $_POST['message'] ?? '';
+    
+    $formStatus = FormValidator::validateContactForm($name, $email, $message);
+    if ($formStatus === "Success") {
+        // In a real app, send email here
+        header("Location: index.php?success=1#contact");
+        exit();
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QuickPOS - Modern POS System</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        /* Header Styles - SFP-8, SFP-9, SFP-10 */
-        .header {
-            background: #1a1a2e;
-            color: white;
-            padding: 1rem 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        
-        .logo {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #e94560;
-        }
-        
-        .nav a {
-            color: white;
-            margin: 0 1rem;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-        
-        .nav a:hover {
-            color: #e94560;
-        }
-        
-        .btn-signup {
-            background: #e94560;
-            padding: 0.5rem 1.5rem;
-            border-radius: 25px;
-        }
-        
-        .btn-signup:hover {
-            background: #ff6b6b;
-            color: white;
-        }
-    </style>
+    <title>QuickPOS</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Header Section - Epic 1 -->
-    <header class="header">
+    <header>
         <div class="logo">QuickPOS</div>
-        <nav class="nav">
+        <nav>
             <a href="#features">Features</a>
             <a href="#pricing">Pricing</a>
-            <a href="#contact">Contact</a>
-            <a href="#contact" class="btn-signup">Sign Up</a>
+            <a href="#contact" class="btn">Sign Up</a>
         </nav>
     </header>
 
-    <!-- Hero Section - Epic 2 (will add later) -->
-    <!-- Features Section - Epic 3 (will add later) -->
-    <!-- Pricing Section - Epic 4 (will add later) -->
-    <!-- Contact Form - Epic 5 (will add later) -->
-    <!-- Footer - Epic 6 (will add later) -->
+    <section id="hero">
+        <h1>Transform Your Retail Experience</h1>
+        <p>The modern POS system for your growing business.</p>
+        <button class="btn">Get Started</button>
+    </section>
+
+    <section id="pricing">
+        <h2>Pricing Plans</h2>
+        <div class="cards">
+            <div class="card"><h3>Basic</h3><p>$29/mo</p></div>
+            <div class="card"><h3>Pro</h3><p>$79/mo</p></div>
+            <div class="card"><h3>Enterprise</h3><p>Custom</p></div>
+        </div>
+    </section>
+
+    <section id="contact">
+        <h2>Contact Us</h2>
+        <?php if (isset($_GET['success'])): ?>
+            <div class="alert success">Thank you! Your message has been sent.</div>
+        <?php endif; ?>
+        <?php if ($formStatus && $formStatus !== "Success"): ?>
+            <div class="alert error"><?php echo htmlspecialchars($formStatus); ?></div>
+        <?php endif; ?>
+        
+        <form method="POST" action="index.php#contact">
+            <input type="text" name="name" placeholder="Your Name" required>
+            <input type="email" name="email" placeholder="Your Email" required>
+            <textarea name="message" placeholder="Your Message" required></textarea>
+            <button type="submit" class="btn">Send Message</button>
+        </form>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 QuickPOS. All rights reserved.</p>
+        <div class="socials">
+            <a href="#">Twitter</a> | <a href="#">LinkedIn</a>
+        </div>
+    </footer>
 </body>
 </html>
