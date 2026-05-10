@@ -1,0 +1,94 @@
+name: QuickPOS CI/CD Pipeline
+
+# Stage 1: Trigger pipeline on PRs to main and pushes to feature/ and bugfix/ branches
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - 'feature/*'
+      - 'bugfix/*'
+
+jobs:
+  # Stage 10: Jira Commit Validation
+  jira-validation:
+    name: Validate Jira Commit Message
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Check for Jira ID
+        run: |
+          COMMIT_MSG=$(git log --format=%B -n 1 ${{ github.sha }})
+          if [[ ! "$COMMIT_MSG" =~ \[[A-Z]+-[0-9]+\] ]]; then
+            echo "Pipeline Failed: Commit message does NOT contain a valid Jira ticket ID (e.g., [POS-101])."
+            exit 1
+          fi
+          echo "Commit message validated successfully."
+
+  # Stage 5: Syntax Check (Runs in parallel)
+  syntax-check:
+    name: PHP Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      # Stage 2: Setup PHP
+      - name: Setup latest PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 'latest'
+      - name: Run Syntax Check
+        run: find . -name "*.php" -exec php -l {} \;
+
+  # Stage 3 & 11: Code Quality (Runs in parallel with tests and syntax)
+  code-quality:
+    name: Code Quality (PHPStan)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Setup latest PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 'latest'
+          tools: phpstan
+      - name: Run PHPStan Analysis
+        run: phpstan analyse . --level=5
+
+  # Stage 4 & 11: Automated Testing (Runs in parallel with quality and syntax)
+  automated-testing:
+    name: Automated Tests (PHPUnit)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Setup latest PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 'latest'
+          tools: phpunit
+      - name: Run PHPUnit Tests
+        # Ensure your tests are located in the /tests directory as mandated
+        run: phpunit tests/
+
+  # Stage 6: Artifact Upload
+  upload-artifact:
+    name: Upload Build Files
+    runs-on: ubuntu-latest
+    # This job only runs if all parallel validation and testing jobs pass
+    needs: [jira-validation, syntax-check, code-quality, automated-testing]
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: quickpos-build-files
+          path: .
+          # Excluding git and github folders from the final build artifact
+          pattern: |
+            **/*
+            !.git/**
+            !.github/**
